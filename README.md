@@ -15,19 +15,18 @@ The system provides:
 Project Structure
 cybersecurity-rag-capstone/
 │
-├── app.py
-├── requirements.txt
-├── data/
-│ └── knowledge_base/
 ├── docs/
-│ ├── System_Architecture.png
-│ └── Final_Report.pdf
-└── src/
-├── ingestion.py
-├── rag_pipeline.py
-├── scoring.py
-├── security.py
-└── utils.py
+│   ├── SRS Documentation.pdf
+│   ├── Methodology.pdf
+│   ├── Evaluation.pdf
+│   └── Final_Report.pdf
+│
+├── .gitignore
+├── LICENSE
+├── README.md
+├── cybersecurity_rag.py
+├── pdf_to_text.py
+└── requirements.txt
 
 
 ## How to Install
