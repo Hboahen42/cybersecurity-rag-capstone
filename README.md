@@ -11,9 +11,8 @@ The system provides:
 - Security-focused architecture and logic  
 - Logging and traceability for analysis  
 
----
 
-## ## Project Structure
+Project Structure
 cybersecurity-rag-capstone/
 │
 ├── app.py
@@ -30,41 +29,34 @@ cybersecurity-rag-capstone/
 ├── security.py
 └── utils.py
 
-yaml
-Copy code
-
----
 
 ## How to Install
 1. Clone the repository  
 2. Install dependencies:
-```bash
-pip install -r requirements.txt
-Add your API key in a .env file:
 
-ini
-Copy code
-OPENAI_API_KEY=your_key_here
-How to Run the Application
 bash
-Copy code
+pip install -r requirements.txt
+
+Add your API key in a .env file:
+OPENAI_API_KEY=your_key_here
+
+How to Run the Application
+
+bash
 streamlit run app.py
+
 This will launch the interface in your browser.
 
-Technologies Used
+Technologies Used:
+
 Python
-
 Streamlit
-
 ChromaDB
-
 OpenAI API
-
 Python-dotenv
-
 Standard NLP preprocessing libraries
 
-Team Members
+Team Members:
 Mufaro Muwirimi – RAG Pipeline Security Engineer
 
 Tadiwa Hukuimwe – Lead AI & Application Security Developer
