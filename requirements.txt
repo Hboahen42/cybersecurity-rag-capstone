@@ -1,0 +1,11 @@
+streamlit
+plotly
+python-dotenv
+sentence-transformers
+torch
+openai>=1.0.0         # For new OpenAI API client usage
+pdfplumber            # For pdf_to_text.py (PDF to text conversion)
+pypdf                 # (Required dependency for pdfplumber)
+beautifulsoup4        # For HTML/text parsing, if needed
+lxml                  # For advanced HTML parsing (optional)
+numpy                 # Used by sentence-transformers and for metrics
