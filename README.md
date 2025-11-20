@@ -1,18 +1,32 @@
-# cybersecurity-rag-capstone
-Cybersecurity RAG system using OpenAI embeddings and ChromaDB with secure-by-design architecture
+Cybersecurity RAG System (Secure-by-Design)
 
-This repository contains the implementation of our Cybersecurity capstone project: a Retrieval-Augmented Generation (RAG) system designed to evaluate and compare responses between a standard LLM (OpenAI) and a RAG-enhanced model using ChromaDB.
+A Retrieval-Augmented Generation (RAG) system using OpenAI embeddings and ChromaDB, built with a security-first architecture.
 
-The system provides:
-- Secure ingestion of knowledge base documents  
-- A safe RAG pipeline with sanitization and validation  
-- Multiple evaluation metrics (Token Overlap, Bigram F1, Sentence Attribution)  
-- A Streamlit-based user interface  
-- Security-focused architecture and logic  
-- Logging and traceability for analysis  
+This project is the implementation of our Cybersecurity Capstone, focused on evaluating and comparing responses from:
 
+* A standard LLM (OpenAI)
+* A RAG-enhanced model using ChromaDB
+
+---
+
+Key Features
+
+* Secure ingestion of knowledge-base documents
+* Hardened RAG pipeline with sanitization & validation
+* Multiple evaluation metrics:
+
+  * Token Overlap
+  * Bigram F1
+  * Sentence Attribution
+* Streamlit-based interface for testing and evaluation
+* Secure-by-design architecture for all stages of the pipeline
+* Logging & traceability for reproducible analysis
+
+---
 
 Project Structure
+
+```
 cybersecurity-rag-capstone/
 │
 ├── docs/
@@ -27,39 +41,66 @@ cybersecurity-rag-capstone/
 ├── cybersecurity_rag.py
 ├── pdf_to_text.py
 └── requirements.txt
+```
 
+---
 
-## How to Install
-1. Clone the repository  
-2. Install dependencies:
+Installation
 
-bash
+1. Clone the repository
+
+```bash
+git clone https://github.com/your-repo/cybersecurity-rag-capstone.git
+cd cybersecurity-rag-capstone
+```
+
+2. Install dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
-Add your API key in a .env file:
+3. Add your OpenAI API key
+   Create a `.env` file in the project root:
+
+```
 OPENAI_API_KEY=your_key_here
+```
 
-How to Run the Application
+---
 
-bash
+Running the Application
+
+Launch the Streamlit interface:
+
+```bash
 streamlit run app.py
+```
 
-This will launch the interface in your browser.
+This will open the application in your browser.
 
-Technologies Used:
+---
 
-Python
-Streamlit
-ChromaDB
-OpenAI API
-Python-dotenv
-Standard NLP preprocessing libraries
+Technologies Used
 
-Team Members:
-Mufaro Muwirimi – RAG Pipeline Security Engineer
+* Python
+* Streamlit
+* ChromaDB
+* OpenAI API
+* python-dotenv
+* NLP preprocessing libraries (NLTK, spaCy, etc.)
 
-Tadiwa Hukuimwe – Lead AI & Application Security Developer
+---
 
-Takudzwa Mambosasa – Secure Data & Infrastructure Engineer
+Team Members
 
-All team members are Cybersecurity seniors at Southeast Missouri State University.
+| Name                   | Role                                     |
+| ---------------------- | ---------------------------------------- |
+| Mufaro Muwirimi    | RAG Pipeline Security Engineer           |
+| Tadiwa Hukuimwe    | Lead AI & Application Security Developer |
+| Takudzwa Mambosasa | Secure Data & Infrastructure Engineer    |
+
+All team members are Cybersecurity seniors at **Southeast Missouri State University.
+
+
+
