@@ -14,6 +14,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application
 COPY . .
 
+# Convert PDFs to text so the RAG knowledge base is baked into the image.
+# pdf_to_text.py reads from data_sources/, so copy the PDFs there first.
+RUN mkdir -p data_sources && \
+    cp docs/*.pdf data_sources/ 2>/dev/null; \
+    python pdf_to_text.py || true
+
 # Streamlit config: disable CORS/XSRF for container environments
 ENV STREAMLIT_SERVER_HEADLESS=true
 ENV STREAMLIT_SERVER_PORT=8501
