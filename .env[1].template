@@ -1,0 +1,6 @@
+# OpenAI API Configuration
+# Replace 'your_openai_api_key_here' with your actual API key from platform.openai.com
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Optional: Uncomment to disable ChromaDB telemetry
+# ANONYMIZED_TELEMETRY=False
