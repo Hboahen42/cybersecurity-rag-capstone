@@ -8,8 +8,12 @@ with or without retrieval/reranking, and compare simple overlap metrics
 between the generated answer and the retrieved context.
 """
 
+
+
 import os
 import base64
+import pickle
+import hashlib
 from typing import List
 
 import streamlit as st
@@ -19,6 +23,16 @@ from datetime import datetime
 from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer, CrossEncoder, util
 from openai import OpenAI
+
+
+# ----------------------------------------------------------------------
+# Cached model loading (prevents slow reloading)
+# ----------------------------------------------------------------------
+@st.cache_resource
+def load_models():
+    embedder = SentenceTransformer("all-MiniLM-L6-v2")
+    reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-12-v2")
+    return embedder, reranker
 
 
 # ----------------------------------------------------------------------
@@ -46,6 +60,10 @@ def chunk_text(text: str, max_length: int = 1500) -> List[str]:
         chunks.append(current_chunk.strip())
 
     return chunks
+
+def get_docs_hash(docs: List[str]) -> str:
+    joined = "".join(docs)
+    return hashlib.md5(joined.encode()).hexdigest()
 
 
 class LocalDocLoader:
@@ -80,17 +98,26 @@ class RAGPipeline:
     """Pipeline encapsulating embedding, reranking and generation logic."""
 
     def __init__(self) -> None:
-        self.embedder = SentenceTransformer("all-MiniLM-L6-v2")
-        self.reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-12-v2")
+        self.embedder, self.reranker = load_models()
         self.documents: List[str] = []
         self.doc_embeddings = None
         self.client = OpenAI()
 
     def load_knowledge_base(self, docs: List[str]) -> None:
-        """Store documents and precompute their embeddings."""
+        docs_hash = get_docs_hash(docs)
+        cache_file = f"embeddings_cache_{docs_hash}.pkl"
+        
+        if os.path.exists(cache_file):
+            with open(cache_file, "rb") as f:
+                self.documents, self.doc_embeddings = pickle.load(f)
+                return
+
         self.documents = docs
-        if docs:
-            self.doc_embeddings = self.embedder.encode(docs, convert_to_tensor=True)
+        self.doc_embeddings = self.embedder.encode(docs, convert_to_tensor=True)
+        
+        with open(cache_file, "wb") as f:
+            pickle.dump((self.documents, self.doc_embeddings), f)
+
 
     def retrieve_and_rerank(
         self, query: str, top_k_retrieve: int = 10, top_k_rerank: int = 3
@@ -609,36 +636,20 @@ def main() -> None:
             )
 
     with col_compare:
+
         compare_disabled = not (
             "last_rag" in st.session_state and "last_chatgpt" in st.session_state
-        )
+            )
+        
         if st.button(
             "Compare",
             disabled=compare_disabled,
             help="Compare the retrieval metrics of the last RAG and ChatGPT runs",
-        ):
-            rag_metrics = st.session_state["last_rag"]["metrics"]
-            chatgpt_metrics = st.session_state["last_chatgpt"]["metrics"]
-            st.markdown("#### Retrieval Metrics Comparison")
-            st.table(
-                {
-                    "Metric": [
-                        "Token-Overlap %",
-                        "Bigram F1",
-                        "Sentence Attribution",
-                    ],
-                    "RAG + Rerank": [
-                        f"{rag_metrics[0]:.1f}%",
-                        f"{rag_metrics[1]:.1f}%",
-                        f"{rag_metrics[2]:.1f}%",
-                    ],
-                    "ChatGPT Only": [
-                        f"{chatgpt_metrics[0]:.1f}%",
-                        f"{chatgpt_metrics[1]:.1f}%",
-                        f"{chatgpt_metrics[2]:.1f}%",
-                    ],
-                }
-            )
+            ):
+            st.session_state["show_compare"] = True
+
+   
+
 
     # ------------------------------------------------------------------
     # Display answers
@@ -650,18 +661,31 @@ def main() -> None:
         st.markdown(rag_res["answer"])
         mcols = st.columns(3)
         mvals = rag_res["metrics"]
+
+
         mcols[0].plotly_chart(
             build_semi_gauge(mvals[0], "Token-Overlap", color=""),
             use_container_width=True,
+            key="rag_token_overlap",
+            
         )
+
+
         mcols[1].plotly_chart(
             build_semi_gauge(mvals[1], "Bigram F1", color=""),
             use_container_width=True,
+            key="rag_bigram_f1",
         )
+
+
         mcols[2].plotly_chart(
             build_semi_gauge(mvals[2], "Sent Attribution", color=""),
             use_container_width=True,
+            key="rag_sent_attr",
+            
         )
+        
+        
         st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown("#### Top Supporting Chunks/Retrieved Contexts")
@@ -692,6 +716,58 @@ def main() -> None:
         )
         st.markdown("</div>", unsafe_allow_html=True)
 
+    
+    
+    
+    # ------------------------------------------------------------------
+    # Full Width Comparison Section
+    # ------------------------------------------------------------------
+
+    if (
+        st.session_state.get("show_compare")
+        and "last_rag" in st.session_state
+        and "last_chatgpt" in st.session_state
+    ):
+        
+        st.markdown("---")
+        st.markdown("## Retrieval Metrics Comparison")
+        
+        
+        rag_metrics = st.session_state["last_rag"]["metrics"]
+        chatgpt_metrics = st.session_state["last_chatgpt"]["metrics"]
+
+        comparison_df = pd.DataFrame(
+            {
+                "Metric": [
+                     "Token-Overlap %",
+
+                     "Bigram F1",
+
+                     "Sentence Attribution",
+                ],
+
+
+                "RAG + Rerank": [
+                    f"{rag_metrics[0]:.1f}%",
+                    f"{rag_metrics[1]:.1f}%",
+                    f"{rag_metrics[2]:.1f}%",
+
+                ],
+                
+                "ChatGPT Only": [
+                    f"{chatgpt_metrics[0]:.1f}%",
+                    f"{chatgpt_metrics[1]:.1f}%",
+                    f"{chatgpt_metrics[2]:.1f}%",
+                ],
+            }
+        )
+
+        st.dataframe(comparison_df, use_container_width=True)
+    
+    
+    
+    
+    
     # ------------------------------------------------------------------
     # History & summary
     # ------------------------------------------------------------------
