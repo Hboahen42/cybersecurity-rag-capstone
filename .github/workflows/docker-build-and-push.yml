@@ -45,6 +45,7 @@ jobs:
             org.opencontainers.image.description=Cybernet is a Cybersecurity Risk Assessment Generator.
 
       - name: Build and push Docker image
+        id: build-push
         uses: docker/build-push-action@v6
         with:
           context: .
