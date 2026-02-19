@@ -11,7 +11,7 @@ on:
         type: string
 
 env:
-  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/cybersecurity-rag
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/cybernet
 
 jobs:
   build-and-push:
